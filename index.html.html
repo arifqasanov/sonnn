@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fayl sistemləri və yaddaş daşıyıcıları</title>
+<style>
+:root{--bg:#f3efe6;--ink:#15171c;--mut:#5d6068;--card:#ffffffb8;--line:#15171c22;--a:#ff5a36;--b:#2f5bff;--c:#0fa97a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d12;--ink:#eef0f4;--mut:#9aa0ad;--card:#161a23b8;--line:#ffffff22;--a:#ff7a59;--b:#6f8dff;--c:#35d6a5}}
+:root[data-theme="dark"]{--bg:#0b0d12;--ink:#eef0f4;--mut:#9aa0ad;--card:#161a23b8;--line:#ffffff22;--a:#ff7a59;--b:#6f8dff;--c:#35d6a5}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box;margin:0}
+body{height:100%;background:var(--bg);color:var(--ink);font-family:"Space Grotesk","Segoe UI",system-ui,sans-serif;overflow:hidden}
+#rain{position:fixed;inset:0;opacity:.22;pointer-events:none}
+.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.3;pointer-events:none;animation:float 14s ease-in-out infinite alternate}
+.b1{width:46vmax;height:46vmax;background:var(--a);top:-18vmax;left:-12vmax}
+.b2{width:42vmax;height:42vmax;background:var(--b);bottom:-18vmax;right:-10vmax;animation-delay:-6s}
+@keyframes float{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+#glow{position:fixed;left:0;top:0;width:320px;height:320px;margin:-160px;border-radius:50%;background:radial-gradient(var(--c),transparent 70%);opacity:.16;pointer-events:none}
+#bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:4px;background:linear-gradient(90deg,var(--a),var(--b),var(--c));width:0;transition:width .7s cubic-bezier(.7,0,.2,1);z-index:5}
+.slide{position:absolute;inset:0;padding:clamp(18px,4.5vw,64px) clamp(18px,5vw,72px) 80px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transform:translateX(7%) scale(.97);transition:opacity .6s,transform .8s cubic-bezier(.2,.8,.2,1),visibility .6s;overflow:auto}
+.slide.past{transform:translateX(-7%) scale(.97)}
+.slide.on{opacity:1;visibility:visible;transform:none}
+.slide>*,.slide .grid>*{opacity:0;transform:translateY(36px)}
+.slide.on>*,.slide.on .grid>*{animation:up .85s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i,0)*.1s + .15s)}
+@keyframes up{to{opacity:1;transform:none}}
+.tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--a);margin-bottom:14px}
+h1{font-size:clamp(32px,6.4vw,84px);line-height:1;letter-spacing:-.04em;font-weight:700;max-width:13ch}
+h2{font-size:clamp(26px,4.4vw,54px);letter-spacing:-.03em;line-height:1.05;margin-bottom:clamp(12px,2vw,26px);max-width:22ch}
+em{font-style:normal;background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+p{color:var(--mut);font-size:clamp(14px,1.6vw,19px);line-height:1.5;max-width:60ch}
+.grid{display:grid;gap:clamp(10px,1.5vw,18px);grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(14px,1.8vw,24px);backdrop-filter:blur(14px);overflow:hidden;transition:translate .35s,border-color .35s}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--a) 28%,transparent),transparent 70%);opacity:0;transition:opacity .3s}
+.card:hover{translate:0 -6px;border-color:var(--a)}.card:hover::before{opacity:1}
+.card>*{position:relative}
+.card b{display:block;font-size:clamp(16px,1.9vw,22px);margin-bottom:6px;letter-spacing:-.02em}
+.card span{color:var(--mut);font-size:clamp(12px,1.25vw,14.5px);line-height:1.45;display:block}
+.num{font:700 clamp(24px,3vw,40px)/1 ui-monospace,Menlo,monospace;color:var(--a);margin-bottom:8px}
+.me{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(16px,3vw,36px)}
+.chip{padding:10px 18px;border:1px solid var(--line);border-radius:99px;background:var(--card);font-size:clamp(13px,1.4vw,16px);backdrop-filter:blur(10px)}
+.chip small{color:var(--mut);margin-right:6px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center}
+@media(max-width:800px){.hero,.split{grid-template-columns:1fr!important}.hero .orb{max-width:260px;margin:0 auto}}
+.orb{position:relative;aspect-ratio:1;width:100%;max-width:400px;justify-self:center}
+.orb .hdd{position:absolute;inset:14%;filter:drop-shadow(0 20px 40px #0006)}
+.ring{position:absolute;inset:0;border:1px dashed var(--line);border-radius:50%;animation:orbit 16s linear infinite}
+.ring i{position:absolute;top:-18px;left:calc(50% - 18px);width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:19px;font-style:normal;background:var(--card);border:1px solid var(--line);animation:orbit 16s linear infinite reverse;backdrop-filter:blur(8px)}
+.ring i:nth-child(2){top:auto;bottom:-18px}.ring i:nth-child(3){top:calc(50% - 18px);left:-18px}.ring i:nth-child(4){top:calc(50% - 18px);left:auto;right:-18px}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.spin{animation:orbit 2.2s linear infinite}.spin.s{animation-duration:6s}.spin.r{animation-direction:reverse}
+.arm{animation:arm 3s ease-in-out infinite alternate}
+@keyframes arm{from{transform:rotate(-7deg)}to{transform:rotate(11deg)}}
+.marq{position:absolute;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom,0px));overflow:hidden;white-space:nowrap;font:600 clamp(14px,2vw,22px) ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7!important;mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+.marq div{display:inline-block;animation:mq 28s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+.split{display:grid;gap:24px;grid-template-columns:1.05fr 1fr;align-items:center}
+.tree{font:clamp(12px,1.5vw,17px)/1.85 ui-monospace,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 24px;backdrop-filter:blur(14px)}
+.tree div{opacity:0;transform:translateX(-14px)}
+.slide.on .tree div{animation:up .5s forwards;animation-delay:calc(var(--k)*.28s + .8s)}
+.tree i{color:var(--b);font-style:normal}.tree u{text-decoration:none;color:var(--c)}
+.path{margin-top:14px;padding:12px 16px;border-radius:14px;background:#0008;color:#7dffd2;font:clamp(12px,1.5vw,16px) ui-monospace,Menlo,monospace;min-height:44px}
+.path:after{content:"▌";animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.cells{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+.cells b{aspect-ratio:1;border-radius:5px;background:var(--line);transition:background .35s,transform .35s}
+.cells b.f{transform:scale(1.08)}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--mut)}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.disk{display:flex;border-radius:14px;overflow:hidden;border:1px solid var(--line);height:clamp(46px,7vw,70px);margin:8px 0 16px}
+.disk div{display:flex;align-items:center;justify-content:center;font-size:clamp(10px,1.2vw,14px);font-weight:600;color:#fff;transform-origin:left;text-align:center;padding:0 4px}
+.slide.on .disk div{animation:grow 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}
+.ill{height:clamp(70px,10vw,104px);display:grid;place-items:center;margin-bottom:10px}.ill svg{height:100%;width:auto;overflow:visible}
+.cd{width:clamp(66px,8vw,92px);aspect-ratio:1;border-radius:50%;background:conic-gradient(#ff5a36,#ffd23f,#35d6a5,#2f5bff,#b45cff,#ff5a36);position:relative;animation:orbit 2s linear infinite;box-shadow:0 8px 24px #0004}
+.cd:before{content:"";position:absolute;inset:36%;border-radius:50%;background:var(--bg);border:3px solid #fff8}
+.cd:after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 40%,#fff9 50%,transparent 60%)}
+.chipled{animation:led 1.6s infinite}@keyframes led{0%,100%{opacity:.25}50%{opacity:1}}
+.plug{animation:plug 3.4s ease-in-out infinite}@keyframes plug{0%,15%{transform:translateX(-34px)}45%,85%{transform:translateX(0)}100%{transform:translateX(-34px)}}
+.ok{animation:ok 3.4s infinite}@keyframes ok{0%,40%{fill:#888}50%,85%{fill:#35d6a5}100%{fill:#888}}
+.pulse{animation:pls 2s linear infinite}@keyframes pls{from{transform:translateX(0)}to{transform:translateX(70px)}}
+.race{display:grid;grid-template-columns:clamp(74px,11vw,130px) 1fr auto;gap:14px;align-items:center;margin:10px 0;font-size:clamp(13px,1.5vw,17px)}
+.track{height:20px;background:var(--line);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--a),var(--b))}
+.slide.on .r1{animation:r1 11s linear infinite}.slide.on .r2{animation:r2 11s linear infinite}.slide.on .r3{animation:r3 11s linear infinite}.slide.on .r4{animation:r4 11s linear infinite}
+@keyframes r1{0%{width:0}91%,96%{width:100%}100%{width:0}}
+@keyframes r2{0%{width:0}34%,96%{width:100%}100%{width:0}}
+@keyframes r3{0%{width:0}25%,96%{width:100%}100%{width:0}}
+@keyframes r4{0%{width:0}4%,96%{width:100%}100%{width:0}}
+.race code{font-family:ui-monospace,Menlo,monospace;color:var(--mut);font-size:.85em;white-space:nowrap}
+.big{font-size:clamp(38px,9vw,120px);font-weight:700;letter-spacing:-.05em;line-height:1}
+.fall{position:fixed;top:-40px;font-size:26px;z-index:4;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+nav{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 8px;backdrop-filter:blur(14px)}
+nav button{all:unset;cursor:pointer;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;transition:background .2s,transform .2s}
+nav button:hover{background:var(--a);color:#fff;transform:scale(1.1)}
+#cnt{font:600 13px ui-monospace,Menlo,monospace;min-width:48px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas><div class="blob b1"></div><div class="blob b2"></div><div id="glow"></div><div id="bar"></div>
+
+<section class="slide on">
+  <div class="hero">
+    <div>
+      <h1 style="--i:1">Fayl sistemləri və <em>yaddaş daşıyıcıları</em></h1>
+      <p style="--i:2;margin-top:16px">Məlumat necə saxlanılır, harada saxlanılır və onu kim idarə edir?</p>
+      <div class="me" style="--i:3">
+        <div class="chip"><small>Hazırladı</small>Arif Həsənov</div>
+        <div class="chip"><small>Qrup</small>656a1</div>
+        <div class="chip"><small>Müəllim</small>Kamran Əbilov</div>
+      </div>
+    </div>
+    <div class="orb" style="--i:2"><div class="ring"><i>📄</i><i>🖼️</i><i>🎵</i><i>🎬</i></div><div class="hdd"></div></div>
+  </div>
+  <div class="marq" style="--i:4"><div id="ext"></div></div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">02 · Plan</div>
+  <h2 style="--i:1">Bu təqdimatda <em>nələr</em> var?</h2>
+  <div class="grid">
+    <div class="card" style="--i:2"><div class="num">01</div><b>Fayl sistemi nədir</b><span>Anlayış, vəzifələr, qovluq iyerarxiyası</span></div>
+    <div class="card" style="--i:3"><div class="num">02</div><b>Daxili quruluş</b><span>Sektor, klaster, cədvəl və jurnal</span></div>
+    <div class="card" style="--i:4"><div class="num">03</div><b>Fayl sistemi növləri</b><span>FAT32, exFAT, NTFS, ext4, APFS</span></div>
+    <div class="card" style="--i:5"><div class="num">04</div><b>Yaddaş daşıyıcıları</b><span>Lent, HDD, optik disk, flash, SSD</span></div>
+    <div class="card" style="--i:6"><div class="num">05</div><b>Sürət yarışı</b><span>Daşıyıcılar 10 GB-ı nə qədər tez köçürür</span></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">03 · Anlayış</div>
+  <h2 style="--i:1">Fayl sistemi — məlumatın <em>nizam-intizamı</em></h2>
+  <div class="split">
+    <div style="--i:2">
+      <p>Fayl sistemi daşıyıcıdakı bitlərin hansı fayla aid olduğunu və harada yerləşdiyini müəyyən edən qaydalar toplusudur. Onsuz disk sadəcə nizamsız baytlar yığını olardı.</p>
+      <div class="grid" style="margin-top:16px">
+        <div class="card"><b>Adlandırma</b><span>Fayl və qovluq adları</span></div>
+        <div class="card"><b>Yerləşdirmə</b><span>Boş sahənin idarəsi</span></div>
+        <div class="card"><b>Mühafizə</b><span>İcazələr, şifrələmə</span></div>
+      </div>
+    </div>
+    <div style="--i:3">
+      <div class="tree">
+        <div style="--k:0"><u>C:\</u></div>
+        <div style="--k:1">├─ <i>Sənədlər\</i></div>
+        <div style="--k:2">│&nbsp;&nbsp;├─ referat.docx</div>
+        <div style="--k:3">│&nbsp;&nbsp;└─ cədvəl.xlsx</div>
+        <div style="--k:4">├─ <i>Şəkillər\</i></div>
+        <div style="--k:5">│&nbsp;&nbsp;└─ foto.jpg</div>
+        <div style="--k:6">└─ <i>Proqramlar\</i></div>
+      </div>
+      <div class="path" id="path"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">04 · Quruluş</div>
+  <h2 style="--i:1">Fayl diskə <em>necə yazılır?</em></h2>
+  <div class="disk" style="--i:2">
+    <div style="flex:1;background:var(--a)">Boot</div>
+    <div style="flex:2;background:var(--b);animation-delay:.15s">Fayl cədvəli</div>
+    <div style="flex:1.4;background:var(--c);animation-delay:.3s">Jurnal</div>
+    <div style="flex:5;background:#8a5bff;animation-delay:.45s">Məlumat sahəsi</div>
+  </div>
+  <div class="split">
+    <div style="--i:3"><div class="cells" id="cells"></div>
+      <div class="leg"><span><i style="background:var(--a)"></i>Fayl A</span><span><i style="background:var(--b)"></i>Fayl B</span><span><i style="background:var(--c)"></i>Fayl C</span><span>Hər kvadrat = 1 klaster</span></div></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="card" style="--i:4"><b>Sektor</b><span>Ən kiçik fiziki vahid: 512 B və ya 4 KB</span></div>
+      <div class="card" style="--i:5"><b>Klaster</b><span>Fayla ayrılan ən kiçik məntiqi blok</span></div>
+      <div class="card" style="--i:6"><b>Metadata</b><span>Ad, ölçü, tarix, icazə, blok ünvanları</span></div>
+      <div class="card" style="--i:7"><b>Jurnal</b><span>Qəfil söndürmədə zədələnmənin qarşısını alır</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">05 · Növlər</div>
+  <h2 style="--i:1">Hansı sistem <em>harada</em> işləyir?</h2>
+  <div class="grid">
+    <div class="card" style="--i:2"><div class="num">FAT32</div><b>Universal, köhnə</b><span>Hər cihazla uyğundur. Tək fayl maksimum 4 GB. Jurnalı yoxdur.</span></div>
+    <div class="card" style="--i:3"><div class="num">exFAT</div><b>Flash üçün</b><span>4 GB limiti yoxdur, USB və SD kartlar üçün yüngül seçim.</span></div>
+    <div class="card" style="--i:4"><div class="num">NTFS</div><b>Windows standartı</b><span>Jurnal, icazələr, şifrələmə, sıxma və böyük həcm.</span></div>
+    <div class="card" style="--i:5"><div class="num">ext4</div><b>Linux əsası</b><span>Etibarlı, jurnallı, serverlərdə geniş yayılıb.</span></div>
+    <div class="card" style="--i:6"><div class="num">APFS</div><b>Apple</b><span>SSD üçün optimallaşdırılıb, snapshot və güclü şifrələmə.</span></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">06 · Daşıyıcılar</div>
+  <h2 style="--i:1">Yaddaş daşıyıcıları <em>işləyərkən</em></h2>
+  <div class="grid">
+    <div class="card" style="--i:2"><div class="ill"><svg viewBox="0 0 140 90"><rect x="6" y="8" width="128" height="74" rx="10" fill="#2a2f3b"/><g class="spin s" style="transform-origin:38px 45px"><circle cx="38" cy="45" r="22" fill="#cfd3dc"/><path d="M38 23v14M38 53v14M16 45h14M46 45h14" stroke="#2a2f3b" stroke-width="5"/></g><g class="spin s" style="transform-origin:102px 45px"><circle cx="102" cy="45" r="22" fill="#cfd3dc"/><path d="M102 23v14M102 53v14M80 45h14M110 45h14" stroke="#2a2f3b" stroke-width="5"/></g><path d="M38 67H102" stroke="#ff7a59" stroke-width="3"/></svg></div><b>Maqnit lent</b><span>Arxiv üçün ucuz və davamlı, ardıcıl oxuma.</span></div>
+    <div class="card" style="--i:3"><div class="ill hdd"></div><b>HDD</b><span>Fırlanan maqnit lövhələr, böyük həcm, mexaniki hissələr.</span></div>
+    <div class="card" style="--i:4"><div class="ill"><div class="cd"></div></div><b>Optik disk</b><span>CD, DVD, Blu-ray. Lazerlə oxunur.</span></div>
+    <div class="card" style="--i:5"><div class="ill"><svg viewBox="0 0 150 70"><rect x="96" y="14" width="46" height="42" rx="6" fill="#444c5c"/><rect x="132" y="22" width="14" height="26" fill="#222"/><g class="plug"><rect x="14" y="20" width="62" height="30" rx="6" fill="#6f8dff"/><rect x="76" y="26" width="26" height="18" fill="#cfd3dc"/><circle class="ok" cx="30" cy="35" r="4" fill="#888"/></g></svg></div><b>USB flash</b><span>NAND yaddaş, kiçik, hərəkətli hissəsi yoxdur.</span></div>
+    <div class="card" style="--i:6"><div class="ill"><svg viewBox="0 0 150 90"><rect x="4" y="6" width="142" height="78" rx="8" fill="#12805f"/><rect x="16" y="18" width="30" height="24" rx="3" fill="#1b1f2a"/><rect x="56" y="18" width="30" height="24" rx="3" fill="#1b1f2a"/><rect x="96" y="18" width="30" height="24" rx="3" fill="#1b1f2a"/><rect class="chipled" x="20" y="22" width="22" height="16" rx="2" fill="#35d6a5"/><rect class="chipled" style="animation-delay:.5s" x="60" y="22" width="22" height="16" rx="2" fill="#35d6a5"/><rect class="chipled" style="animation-delay:1s" x="100" y="22" width="22" height="16" rx="2" fill="#35d6a5"/><path d="M16 62h118" stroke="#fff4" stroke-width="2"/><circle class="pulse" cx="20" cy="62" r="5" fill="#ffd23f"/></svg></div><b>SSD / NVMe</b><span>Flash əsaslı, səssiz və çox sürətli.</span></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">07 · Yarış</div>
+  <h2 style="--i:1">10 GB fayl köçürmə <em>yarışı</em></h2>
+  <p style="--i:2">Təxmini ardıcıl sürətlərə görə. Real nəticə modeldən asılıdır.</p>
+  <div style="--i:3;margin-top:14px">
+    <div class="race"><span>HDD</span><div class="track"><i class="r1"></i></div><code>~67 san</code></div>
+    <div class="race"><span>USB flash</span><div class="track"><i class="r2"></i></div><code>~25 san</code></div>
+    <div class="race"><span>SATA SSD</span><div class="track"><i class="r3"></i></div><code>~18 san</code></div>
+    <div class="race"><span>NVMe SSD</span><div class="track"><i class="r4"></i></div><code>~3 san</code></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="tag" style="--i:0">08 · Nəticə</div>
+  <div class="big" style="--i:1">Düzgün <em>seçim</em></div>
+  <div class="grid" style="margin-top:clamp(14px,3vw,32px)">
+    <div class="card" style="--i:2"><b>Daşıyıcı</b><span>Məlumatı fiziki saxlayır: sürət, həcm və qiymət balansı.</span></div>
+    <div class="card" style="--i:3"><b>Fayl sistemi</b><span>Məlumatı məntiqi təşkil edir: uyğunluq, limit, təhlükəsizlik.</span></div>
+    <div class="card" style="--i:4"><b>Məsləhət</b><span>Sistem diski üçün NTFS/ext4/APFS, flash üçün exFAT.</span></div>
+  </div>
+  <p style="--i:5;margin-top:24px">Diqqətinizə görə təşəkkür edirəm! Arif Həsənov · 656a1 · Müəllim: Kamran Əbilov</p>
+</section>
+
+<nav><button id="pv" aria-label="Əvvəlki">←</button><span id="cnt">1 / 8</span><button id="nx" aria-label="Növbəti">→</button></nav>
+
+<script>
+(function(){
+var HDD='<svg viewBox="0 0 200 200"><rect x="4" y="4" width="192" height="192" rx="18" fill="#2a2f3b" stroke="#fff3" stroke-width="2"/><circle cx="92" cy="100" r="72" fill="#10131a"/><g class="spin" style="transform-origin:92px 100px"><circle cx="92" cy="100" r="62" fill="none" stroke="#6f8dff" stroke-opacity=".6" stroke-dasharray="40 14" stroke-width="4"/><circle cx="92" cy="100" r="46" fill="none" stroke="#ff7a59" stroke-opacity=".7" stroke-dasharray="26 10" stroke-width="4"/><circle cx="92" cy="100" r="30" fill="none" stroke="#35d6a5" stroke-opacity=".8" stroke-dasharray="14 8" stroke-width="4"/><circle cx="92" cy="100" r="10" fill="#cfd3dc"/></g><g class="arm" style="transform-origin:174px 34px"><path d="M174 34L112 92" stroke="#cfd3dc" stroke-width="7" stroke-linecap="round"/><circle cx="174" cy="34" r="10" fill="#cfd3dc"/><circle cx="110" cy="94" r="5" fill="#ff5a36"/></g></svg>';
+document.querySelectorAll('.hdd').forEach(function(e){e.innerHTML=HDD});
+var ex='.docx  .jpg  .mp3  .exe  .pdf  .zip  .txt  .png  .mp4  .xlsx  .iso  .html  ';
+document.getElementById('ext').textContent=ex+ex+ex+ex;
+var s=[].slice.call(document.querySelectorAll('.slide')),n=0,bar=document.getElementById('bar'),cnt=document.getElementById('cnt');
+function go(i){
+  n=Math.max(0,Math.min(s.length-1,i));
+  s.forEach(function(e,k){e.classList.toggle('on',k===n);e.classList.toggle('past',k<n)});
+  bar.style.width=((n+1)/s.length*100)+'%';
+  cnt.textContent=(n+1)+' / '+s.length;
+  s[n].scrollTop=0;
+  if(n===7)confetti();
+}
+function confetti(){var E=['💾','💿','📀','🗂️','⚡','📁'];for(var k=0;k<22;k++){var f=document.createElement('span');f.className='fall';f.textContent=E[k%E.length];f.style.left=Math.random()*100+'vw';f.style.animationDuration=(3+Math.random()*3)+'s';f.style.animationDelay=Math.random()*1.2+'s';document.body.appendChild(f);setTimeout(function(x){x.remove()},8000,f)}}
+document.getElementById('nx').onclick=function(){go(n+1)};
+document.getElementById('pv').onclick=function(){go(n-1)};
+document.addEventListener('keydown',function(e){
+  if(['ArrowRight','PageDown',' '].indexOf(e.key)>-1){e.preventDefault();go(n+1)}
+  if(['ArrowLeft','PageUp'].indexOf(e.key)>-1)go(n-1)
+});
+var x0=null;
+document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>50)go(n+(d<0?1:-1));x0=null});
+var g=document.getElementById('glow');
+document.addEventListener('mousemove',function(e){g.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)';var c=e.target.closest&&e.target.closest('.card');if(c){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}});
+/* klaster animasiyası */
+var box=document.getElementById('cells'),cells=[],col=['var(--a)','var(--b)','var(--c)'];
+for(var q=0;q<70;q++){var b=document.createElement('b');box.appendChild(b);cells.push(b)}
+var order=[],st=0;
+function shuffle(){order=cells.map(function(_,i){return i});for(var i=order.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=order[i];order[i]=order[j];order[j]=t}st=0}
+shuffle();
+setInterval(function(){
+  if(!s[3].classList.contains('on'))return;
+  if(st>=52){cells.forEach(function(c){c.style.background='';c.classList.remove('f')});shuffle();return}
+  var c=cells[order[st]];c.style.background=col[Math.floor(st/6)%3];c.classList.add('f');
+  setTimeout(function(){c.classList.remove('f')},300);st++;
+},110);
+/* yazı maşını */
+var P=['C:\\Sənədlər\\referat.docx','C:\\Şəkillər\\foto.jpg','C:\\Proqramlar\\setup.exe'],pi=0,ci=0,pe=document.getElementById('path'),del=false;
+(function tw(){
+  var t=P[pi];ci+=del?-1:1;pe.textContent=t.slice(0,ci);
+  var d=del?25:70;
+  if(!del&&ci===t.length){del=true;d=1400}else if(del&&ci===0){del=false;pi=(pi+1)%P.length;d=300}
+  setTimeout(tw,d);
+})();
+/* ikilik yağış */
+var cv=document.getElementById('rain'),cx=cv.getContext('2d'),W,H,dr=[],S=20;
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;dr=[];for(var i=0;i<W/S;i++)dr.push(Math.random()*H/S)}
+rs();addEventListener('resize',rs);
+setInterval(function(){
+  cx.clearRect(0,0,W,H);cx.font='14px ui-monospace,monospace';
+  var cl=getComputedStyle(document.documentElement).getPropertyValue('--c').trim()||'#35d6a5';cx.fillStyle=cl;
+  for(var i=0;i<dr.length;i++){for(var t=0;t<7;t++){cx.globalAlpha=1-t/7;cx.fillText(((i+t+Math.floor(dr[i]))%2),i*S,(dr[i]-t)*S)}
+    dr[i]+=.35;if(dr[i]*S>H+150&&Math.random()>.97)dr[i]=0}
+  cx.globalAlpha=1;
+},60);
+go(0);
+})();
+</script>
+</body>
+</html>
